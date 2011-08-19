@@ -59,7 +59,7 @@ void GammaOrganizer::OutputCoinInfo(const int &searchEnergy)
 	 cout << endl;
       }
       
-      cout << "The following gammas are in coincidence:" << endl;
+      cout << "The following gammas are in coincidence: ";
       for(vector<unsigned int>::iterator itTemp = (*itCoin).second.coincidences.begin();
 	  itTemp != (*itCoin).second.coincidences.end(); itTemp++) {
 	 cout << *itTemp << " ";
@@ -100,24 +100,60 @@ void GammaOrganizer::OutputFitInfo(const int &searchEnergy)
 //********** OutputGammaInformation **********
 void GammaOrganizer::OutputGammaInformation(const int &searchEnergy, const string &verbosity)
 {
-   if(verbosity == "--h" || verbosity == "-h") {
-      OutputHelpInfo();
-   }else {
-      ReadGeneralInformation();
-      OutputGenInfo(searchEnergy);
+   ReadGeneralInformation();
+   OutputGenInfo(searchEnergy);
+   
+   if(verbosity == "--c" || verbosity == "-c") {
+      ReadCoincidenceInformation();
+      OutputCoinInfo(searchEnergy);
+   }else if(verbosity == "--f" || verbosity == "-f") {
+      ReadFitInformation();
+      OutputFitInfo(searchEnergy);
+   }else if(verbosity == "--v" || verbosity == "-v") {
+      ReadCoincidenceInformation();
+      ReadFitInformation();
+      OutputFitInfo(searchEnergy);
+      OutputCoinInfo(searchEnergy);
+   }
+}
 
-      if(verbosity == "--c" || verbosity == "-c") {
-	 ReadCoincidenceInformation();
-	 OutputCoinInfo(searchEnergy);
-      }else if(verbosity == "--f" || verbosity == "-f") {
-	 ReadFitInformation();
-	 OutputFitInfo(searchEnergy);
-      }else if(verbosity == "--v" || verbosity == "-v") {
-	 ReadCoincidenceInformation();
-	 ReadFitInformation();
-	 OutputFitInfo(searchEnergy);
-	 OutputCoinInfo(searchEnergy);
+
+//********** OutputGammaRange **********
+void GammaOrganizer::OutputGammaRange(const int &searchEnergyA, 
+				      const int &searchEnergyB, 
+				      const string &verbosity)
+{
+   int low, high;
+   vector<int> gammas;
+   
+   if(searchEnergyA > searchEnergyB) {
+      low  = searchEnergyB;
+      high = searchEnergyA;
+   }else {
+      low  = searchEnergyA;
+      high = searchEnergyB;
+   }
+
+   ReadGeneralInformation();
+   
+   for(int i = low; i <= high; i++) {
+      GenInfoMap::iterator it = genInfo.find(i);
+      if(it != genInfo.end()) {
+	 gammas.push_back((*it).first);
       }
+   }
+   
+   if(verbosity == "--l") {
+      cout << endl << "The following gammas were found in this range: ";
+      for(vector<int>::iterator it = gammas.begin(); it != gammas.end(); it++) {
+	 cout << *it << " ";
+      }
+      cout << endl << endl;
+   }else if(verbosity == "--g" || verbosity == "-g") {
+      for(vector<int>::iterator it = gammas.begin(); it != gammas.end(); it++)
+	 OutputGenInfo(*it);
+   }else {
+      OutputHelpInfo();
    }
 }
 
@@ -165,7 +201,7 @@ void GammaOrganizer::OutputGenInfo(const int &searchEnergy)
 //********** OutputHelpInfo **********
 void GammaOrganizer::OutputHelpInfo(void)
 {
-   cout << endl << "To use this program input a gamma energy." << endl
+   cout << endl << "A program to help organize gammas." << endl
 	<< "Example: ./gammaSearch 511" << endl
 	<< "Optional arguments (place before the energy): " << endl
 	<< "--h -> displays this message" << endl
@@ -173,6 +209,10 @@ void GammaOrganizer::OutputHelpInfo(void)
 	<< "--c -> outputs general + coincidence information" << endl
 	<< "--f -> outputs general + fit information" << endl
 	<< "--v -> outputs all information" << endl 
+	<< "To search in an energy range simply enter the " 
+	<< "low and high bound." << endl
+	<< "General output can be generated for a range by passing" 
+	<< "the \"--g\" flag." << endl
 	<< "Problems? Contact stanpaulauskas@gmail.com" << endl << endl;
 }
 

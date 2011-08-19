@@ -17,6 +17,10 @@ class GammaOrganizer
 
    static void OutputGammaInformation(const int &searchEnergy, 
 				      const std::string &verbosity);
+   static void OutputGammaRange(const int &searchEnergyA, 
+				const int &searchEnergyB, 
+				const std::string &verbosity);
+   static void OutputHelpInfo(void);
    static void ReadGeneralInformation(void);
    static void ReadCoincidenceInformation(void);
    static void ReadFitInformation(void);
@@ -59,8 +63,7 @@ class GammaOrganizer
    static void OutputCoinInfo(const int &searchEnergy);
    static void OutputGenInfo(const int &searchEnergy);
    static void OutputFitInfo(const int &searchEnergy);
-   static void OutputHelpInfo(void);
-
+   
    static int ParseLineInt(std::string &line);
    static double ParseLineDouble(std::string &line);
    static std::string ParseLineString(std::string &line);
