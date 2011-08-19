@@ -212,9 +212,9 @@ void GammaOrganizer::ReadCoincidenceInformation(void)
       while(coinInfoFile.good()) {
 	 CoincidenceInformation data;
 	 string line;
-	 
+
 	 getline(coinInfoFile, line);
-	 if(line.find("#") != string::npos)
+	 if(line.find("#") != string::npos || line == "")
 	    continue;
 
 	 //Get the Coincidence gammas
@@ -273,7 +273,7 @@ void GammaOrganizer::ReadGeneralInformation(void)
 	 string line;
 	 
 	 getline(genInfoFile, line);
-	 if(line.find("#") != string::npos)
+	 if(line.find("#") != string::npos || line == "")
 	    continue;
 
 	 size_t foundQuoteBegin = line.find("\"");
@@ -308,7 +308,7 @@ void GammaOrganizer::ReadFitInformation(void)
 	 string line;
 	 
 	 getline(fitInfoFile, line);
-	 if(line.find("#") != string::npos)
+	 if(line.find("#") != string::npos || line == "")
 	    continue;
 
 	 int gammaEnergy    = ParseLineInt(line);
