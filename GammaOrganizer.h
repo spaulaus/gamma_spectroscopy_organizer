@@ -63,6 +63,7 @@ class GammaOrganizer
    static void OutputCoinInfo(const int &searchEnergy);
    static void OutputGenInfo(const int &searchEnergy);
    static void OutputFitInfo(const int &searchEnergy);
+   static void QuoteError(const std::string &fileName, const int &lineNo);
    
    static int ParseLineInt(std::string &line);
    static double ParseLineDouble(std::string &line);

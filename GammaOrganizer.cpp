@@ -42,7 +42,8 @@ void GammaOrganizer::OutputCoinInfo(const int &searchEnergy)
    if(itCoin == coinInfo.end()) {
       cout << endl << "Coincidence Information" << endl 
 	   << "--------------------" << endl
-	   << "There is no coincidence information for this gamma." << endl << endl;
+	   << "There is no coincidence information for this gamma." 
+	   << endl << endl;
    }else {
       cout << endl << "Coincidence Information" << endl 
 	   << "--------------------" << endl
@@ -60,7 +61,8 @@ void GammaOrganizer::OutputCoinInfo(const int &searchEnergy)
       }
       
       cout << "The following gammas are in coincidence: ";
-      for(vector<unsigned int>::iterator itTemp = (*itCoin).second.coincidences.begin();
+      for(vector<unsigned int>::iterator itTemp = 
+	     (*itCoin).second.coincidences.begin();
 	  itTemp != (*itCoin).second.coincidences.end(); itTemp++) {
 	 cout << *itTemp << " ";
       }
@@ -82,11 +84,12 @@ void GammaOrganizer::OutputFitInfo(const int &searchEnergy)
       cout << endl << "Fit Information" << endl
 	   << "-------------------" << endl
 	   << "Fit Spectrum: " << (*itFit).second.spectrum << endl
-	   << "Fit Range: (" << (*itFit).second.low << "," << (*itFit).second.high << ")" << endl
+	   << "Fit Range: (" << (*itFit).second.low << "," 
+	   << (*itFit).second.high << ")" << endl
 	   << "Centroid: " << (*itFit).second.centroid << " keV" << endl
-	   << "Area: " << (*itFit).second.area << endl
-	   << "%Error: " << (*itFit).second.percentError << endl
-	   << "FWHM: " << (*itFit).second.fwhm << " keV" << endl
+	   << "Area: " << (*itFit).second.area
+	   << " +- " << ((*itFit).second.percentError/100)*(*itFit).second.area 
+	   << endl << "FWHM: " << (*itFit).second.fwhm << " keV" << endl
 	   << "Low/High Method?: ";
       
       if((*itFit).second.lowHighMethod) {
@@ -98,7 +101,8 @@ void GammaOrganizer::OutputFitInfo(const int &searchEnergy)
 
 
 //********** OutputGammaInformation **********
-void GammaOrganizer::OutputGammaInformation(const int &searchEnergy, const string &verbosity)
+void GammaOrganizer::OutputGammaInformation(const int &searchEnergy, 
+					    const string &verbosity)
 {
    ReadGeneralInformation();
    OutputGenInfo(searchEnergy);
@@ -179,19 +183,22 @@ void GammaOrganizer::OutputGenInfo(const int &searchEnergy)
     	   << "Comments: " << (*itOrig).second.comment << endl;
    }else if(mOne) {
       cout << endl
-	   << "There is no gamma recoreded with an energy of " << searchEnergy << " keV." 
-	   << endl << "I did find one with an energy of " << searchEnergy - 1 << " keV." 
+	   << "There is no gamma recoreded with an energy of " 
+	   << searchEnergy << " keV." << endl 
+	   << "I did find one with an energy of " << searchEnergy - 1 << " keV." 
 	   << endl << endl;
       exit(1);
    }else if(pOne) {
       cout << endl
-	   << "There is no gamma recoreded with an energy of " << searchEnergy << " keV." 
-	   << endl << "I did find one with an energy of " << searchEnergy + 1 << " keV." 
+	   << "There is no gamma recoreded with an energy of " 
+	   << searchEnergy << " keV." << endl 
+	   << "I did find one with an energy of " << searchEnergy + 1 << " keV." 
 	   << endl << endl;
       exit(1);
    }else {
       cout << endl 
-	   << "The specified gamma could not be found. Are you sure you typed it right?" 
+	   << "The specified gamma could not be found. " 
+	   << "Are you sure you typed it right?" 
 	   << endl << endl;
       exit(1);
    }
@@ -204,15 +211,15 @@ void GammaOrganizer::OutputHelpInfo(void)
    cout << endl << "A program to help organize gammas." << endl
 	<< "Example: ./gammaSearch 511" << endl
 	<< "Optional arguments (place before the energy): " << endl
-	<< "--h -> displays this message" << endl
-	<< "--g -> outputs general information (default)" << endl
-	<< "--c -> outputs general + coincidence information" << endl
-	<< "--f -> outputs general + fit information" << endl
-	<< "--v -> outputs all information" << endl 
+	<< "-h -> displays this message" << endl
+	<< "-g -> outputs general information (default)" << endl
+	<< "-c -> outputs general + coincidence information" << endl
+	<< "-f -> outputs general + fit information" << endl
+	<< "-v -> outputs all information" << endl 
 	<< "To search in an energy range simply enter the " 
 	<< "low and high bound." << endl
 	<< "General output can be generated for a range by passing" 
-	<< "the \"--g\" flag." << endl
+	<< "the \"-g\" flag." << endl
 	<< "Problems? Contact stanpaulauskas@gmail.com" << endl << endl;
 }
 
@@ -244,12 +251,26 @@ string GammaOrganizer::ParseLineString(string &line)
 }
 
 
+//********** QuoteError **********
+void GammaOrganizer::QuoteError(const string &fileName, const int &lineNo)
+{
+   cout << endl << "Cannot find comment/coincidence quotes in \"" 
+	<< fileName << "\".  At line: " << lineNo << "." << endl
+	<< "This is a fatal error." << endl << endl;
+
+   exit(2);
+}
+
+
 //********** ReadCoincidenceInformation ***********
 void GammaOrganizer::ReadCoincidenceInformation(void)
 {
+   int lineNo = 0;
    ifstream coinInfoFile("coincidenceInfo.dat");
    if(coinInfoFile.is_open()) {
       while(coinInfoFile.good()) {
+	 lineNo++;
+
 	 CoincidenceInformation data;
 	 string line;
 
@@ -262,13 +283,17 @@ void GammaOrganizer::ReadCoincidenceInformation(void)
 	 size_t foundVecEnd   = line.find("\"", int(foundVecStart)+1);
 	 int coinStringLen = foundVecEnd - foundVecStart;
 
+	 if(foundVecStart == string::npos || foundVecEnd == string::npos)
+	    QuoteError("coincidenceInfo.dat", lineNo);
+
 	 string coinGammas = 
 	    line.substr(int(foundVecStart) + 1, coinStringLen - 1);
 	 line.erase(foundVecStart, coinStringLen + 1);
 
 	 while(!coinGammas.empty()) {
 	    size_t found = coinGammas.find(" ");
-	    data.coincidences.push_back(atoi(coinGammas.substr(0, found).c_str()));
+	    int energy = atoi(coinGammas.substr(0, found).c_str());
+	    data.coincidences.push_back(energy);
 	    coinGammas.erase(0,found+1);
 	    if(found == string::npos)
 	       coinGammas.clear();
@@ -280,6 +305,9 @@ void GammaOrganizer::ReadCoincidenceInformation(void)
 	 size_t foundComStart = line.find("\"");
 	 size_t foundComEnd   = line.find("\"", int(foundComStart)+1);
 	 int commentSize = foundComEnd - foundComStart;
+
+	 if(foundComStart == string::npos || foundComEnd == string::npos)
+	    QuoteError("coincidenceInfo.dat", lineNo);
 
 	 data.comment = line.substr(int(foundComStart) + 1, commentSize - 1);
 	 line.erase(foundComStart, commentSize + 1);
@@ -306,19 +334,27 @@ void GammaOrganizer::ReadCoincidenceInformation(void)
 //********** ReadGeneralInformation **********
 void GammaOrganizer::ReadGeneralInformation(void) 
 {
+   int lineNo = 0;
+
    ifstream genInfoFile("generalInfo.dat");
    if(genInfoFile.is_open()) {
       while(genInfoFile.good()) {
+	 lineNo++;
+
 	 GeneralInformation data;
 	 string line;
 	 
 	 getline(genInfoFile, line);
+
 	 if(line.find("#") != string::npos || line == "")
 	    continue;
 
 	 size_t foundQuoteBegin = line.find("\"");
 	 size_t foundQuoteEnd   = line.find("\"", int(foundQuoteBegin)+1);
 	 int commentSize = foundQuoteEnd - foundQuoteBegin;
+
+	 if(foundQuoteBegin == string::npos || foundQuoteEnd == string::npos)
+	    QuoteError("generalInfo.dat", lineNo);
 
 	 data.comment = line.substr(int(foundQuoteBegin) + 1, commentSize -1);
 	 line.erase(foundQuoteBegin);
