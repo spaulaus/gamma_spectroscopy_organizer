@@ -3,7 +3,7 @@
  * Written: S.V. Paulauskas - 17 Aug 2011
  */
 #ifndef __GAMMAORGANIZER_H_
-#define __GAMMAORGANIZER_H_
+#define __GAMMAORGANIZER_H_ 1
 
 #include <map>
 #include <string>
@@ -15,19 +15,16 @@ class GammaOrganizer
    GammaOrganizer(const int &numArgs);
    ~GammaOrganizer();
 
-   static void OutputGammaInformation(const int &searchEnergy, 
-				      const std::string &verbosity);
-   static void OutputGammaRange(const int &searchEnergyA, 
-				const int &searchEnergyB, 
-				const std::string &verbosity);
-   static void OutputHelpInfo(void);
-   static void ReadGeneralInformation(void);
-   static void ReadCoincidenceInformation(void);
-   static void ReadFitInformation(void);
-
- protected: 
-   //EMPTY
-
+   void OutputGammaInformation(const int &searchEnergy, 
+			       const std::string &verbosity);
+   void OutputGammaRange(const int &searchEnergyA, 
+			 const int &searchEnergyB, 
+			 const std::string &verbosity);
+   void OutputHelpInfo(void);
+   void ReadGeneralInformation(void);
+   void ReadCoincidenceInformation(void);
+   void ReadFitInformation(void);
+   
  private:
    struct GeneralInformation {
       //General information
@@ -60,14 +57,14 @@ class GammaOrganizer
       unsigned int spectrum;
    };
 
-   static void OutputCoinInfo(const int &searchEnergy);
-   static void OutputGenInfo(const int &searchEnergy);
-   static void OutputFitInfo(const int &searchEnergy);
-   static void QuoteError(const std::string &fileName, const int &lineNo);
+   void OutputCoinInfo(const int &searchEnergy);
+   void OutputGenInfo(const int &searchEnergy);
+   void OutputFitInfo(const int &searchEnergy);
+   void QuoteError(const std::string &fileName, const int &lineNo);
    
-   static int ParseLineInt(std::string &line);
-   static double ParseLineDouble(std::string &line);
-   static std::string ParseLineString(std::string &line);
+   int ParseLineInt(std::string &line);
+   double ParseLineDouble(std::string &line);
+   std::string ParseLineString(std::string &line);
 
    typedef std::map<unsigned int, struct GeneralInformation> GenInfoMap;
    typedef std::map<unsigned int, struct CoincidenceInformation> CoinInfoMap;

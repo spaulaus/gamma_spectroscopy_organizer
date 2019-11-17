@@ -107,13 +107,13 @@ void GammaOrganizer::OutputGammaInformation(const int &searchEnergy,
    ReadGeneralInformation();
    OutputGenInfo(searchEnergy);
    
-   if(verbosity == "--c" || verbosity == "-c") {
+   if(verbosity == "-c") {
       ReadCoincidenceInformation();
       OutputCoinInfo(searchEnergy);
-   }else if(verbosity == "--f" || verbosity == "-f") {
+   }else if(verbosity == "-f") {
       ReadFitInformation();
       OutputFitInfo(searchEnergy);
-   }else if(verbosity == "--v" || verbosity == "-v") {
+   }else if(verbosity == "-v") {
       ReadCoincidenceInformation();
       ReadFitInformation();
       OutputFitInfo(searchEnergy);
@@ -147,13 +147,13 @@ void GammaOrganizer::OutputGammaRange(const int &searchEnergyA,
       }
    }
    
-   if(verbosity == "--l") {
+   if(verbosity == "-l") {
       cout << endl << "The following gammas were found in this range: ";
       for(vector<int>::iterator it = gammas.begin(); it != gammas.end(); it++) {
 	 cout << *it << " ";
       }
       cout << endl << endl;
-   }else if(verbosity == "--g" || verbosity == "-g") {
+   }else if(verbosity == "-g") {
       for(vector<int>::iterator it = gammas.begin(); it != gammas.end(); it++)
 	 OutputGenInfo(*it);
    }else {
@@ -258,7 +258,7 @@ void GammaOrganizer::QuoteError(const string &fileName, const int &lineNo)
 	<< fileName << "\".  At line: " << lineNo << "." << endl
 	<< "This is a fatal error." << endl << endl;
 
-   exit(2);
+   exit(1);
 }
 
 
